@@ -1,6 +1,6 @@
 package Core
 
-import java.time.{LocalDateTime, LocalDate}
+import java.time.{LocalTime, Month, LocalDateTime, LocalDate}
 
 case class Day(date: LocalDate, slots: Set[Timeslot]) {
   def dateslots = slots.map { slot =>

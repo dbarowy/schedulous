@@ -1,3 +1,3 @@
 package Core
 
-case class Person(fname: String, lname: String)
+case class Person(fname: String, lname: String, availability: Availability)

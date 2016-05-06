@@ -3,8 +3,11 @@ import Core._
 
 object Schedulous extends App {
   // schedule
-  val Sunday = Day(
-    LocalDate.of(2016, Month.JUNE, 12),
+  val Sunday = LocalDate.of(2016, Month.JUNE, 12)
+  val Monday = LocalDate.of(2016, Month.JUNE, 13)
+
+  val SundayEvents = Day(
+    Sunday,
     Set(
       Timeslot("SEXYPL", LocalTime.of(9,0), LocalTime.of(10,0)),
       Timeslot("DUMBPL", LocalTime.of(9,0), LocalTime.of(10,0)),
@@ -12,8 +15,8 @@ object Schedulous extends App {
       Timeslot("POOPL", LocalTime.of(10,0), LocalTime.of(11,15))
     )
   )
-  val Monday = Day(
-    LocalDate.of(2016, Month.JUNE, 13),
+  val MondayEvents = Day(
+    Monday,
     Set(
       Timeslot("TRACK1.1", LocalTime.of(9,0), LocalTime.of(10,0)),
       Timeslot("TRACK2.1", LocalTime.of(9,0), LocalTime.of(10,0)),
@@ -24,18 +27,18 @@ object Schedulous extends App {
 
   // people
   val people = Set(
-    Person("Dan", "Barowy"),
-    Person("Michael", "Christensen"),
-    Person("Emma", "Tosch"),
-    Person("John", "Vilk"),
-    Person("Bobby", "Powers"),
-    Person("Rian", "Shambaugh")
+    Person("Dan", "Barowy", Availability.AllDay(Monday) + Availability.AllDay(Sunday)),
+    Person("Michael", "Christensen", Availability.AllDay(Monday) + Availability.AllDay(Sunday)),
+    Person("Emma", "Tosch", Availability.AllDay(Monday) + Availability.AllDay(Sunday)),
+    Person("John", "Vilk", Availability.AllDay(Monday) + Availability.AllDay(Sunday)),
+    Person("Bobby", "Powers", Availability.AllDay(Monday) + Availability.AllDay(Sunday)),
+    Person("Rian", "Shambaugh", Availability.AllDay(Monday) + Availability.AllDay(Sunday))
   )
 
   // days
-  val days = Set(Sunday, Monday)
+  val events = Set(SundayEvents, MondayEvents)
 
-  val schedule = Schedule.solve(people, days)
+  val schedule = Schedule.solve(people, events)
 
   // get schedule
   println(schedule)

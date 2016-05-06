@@ -5,7 +5,7 @@ import smtlib.parser.Commands.DefineFun
 import smtlib.parser.Terms.{SSymbol, SExpr, SNumeral}
 
 object Schedule {
-  def solve(people: Set[Person], days: Set[Day]) : Option[Schedule] = {
+  def solve(people: Set[Person], events: Set[Day]) : Option[Schedule] = {
     // constants
     val MAXSLOTS  = 2
     val MINSLOTS  = 1
@@ -13,12 +13,12 @@ object Schedule {
     val MINUTEEPS = 90
 
     // constraints
-    val schedule = Timeslots(days)
+    val schedule = Timeslots(events)
     val participants = People(people)
     val c1 = ConsFillSlots(participants.peopleMap, schedule.slotMap)
     val c2 = ConsMaxSlots(MAXSLOTS, participants.peopleMap, schedule.slotMap)
     val c3 = ConsMinSlots(MINSLOTS, participants.peopleMap, schedule.slotMap)
-    val c4 = ConsMaxDays(MAXDAYS, days, participants.peopleMap, schedule.slotMap)
+    val c4 = ConsMaxDays(MAXDAYS, events, participants.peopleMap, schedule.slotMap)
     val c5 = ConsWorkload(participants.peopleMap, schedule.slotMap)
     val c6 = ConsAvgWorkload(MINUTEEPS, c5.name, participants.peopleMap, schedule.slotMap)
     val c7 = ConsNoConcurrentSlots(participants.peopleMap, schedule.slotMap)
