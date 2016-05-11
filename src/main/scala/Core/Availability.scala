@@ -5,6 +5,9 @@ import java.time.{LocalDate, LocalTime, Month, LocalDateTime}
 object Availability {
   type Span = (LocalDateTime,LocalDateTime)
 
+  def NotAvailable : Availability = {
+    Availability(Set.empty)
+  }
   def AllDay(day: LocalDate) : Availability = {
     val start = LocalDateTime.of(day, LocalTime.MIN)
     val end = LocalDateTime.of(day, LocalTime.MAX)

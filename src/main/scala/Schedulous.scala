@@ -27,7 +27,7 @@ object Schedulous extends App {
 
   // people
   val people = Set(
-    Person("Dan", "Barowy", Availability.AllDay(Monday) + Availability.AllDay(Sunday)),
+    Person("Dan", "Barowy", Availability.AllDay(Sunday)),
     Person("Michael", "Christensen", Availability.AllDay(Monday) + Availability.AllDay(Sunday)),
     Person("Emma", "Tosch", Availability.AllDay(Monday) + Availability.AllDay(Sunday)),
     Person("John", "Vilk", Availability.AllDay(Monday) + Availability.AllDay(Sunday)),
