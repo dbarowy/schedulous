@@ -10,4 +10,6 @@ resolvers += "PLASMA" at "https://dl.bintray.com/plasma-umass/maven"
 
 libraryDependencies += "edu.umass.cs" %% "smtlib" % "1.0.1"
 
+libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.6" % "test"
+
 

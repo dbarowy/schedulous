@@ -23,8 +23,10 @@ object Availability {
     val end = LocalDateTime.of(day, LocalTime.MAX)
     val whole_day: Option[Span] = Some(start,end)
 
-    val (_,slots: List[Span]) =
-      except.foldLeft(whole_day,List[Span]()) {
+    val except2 = except.toList.sortWith { case ((s1,e1),(s2,se2)) => s1.isBefore(s2) }
+
+    val (uncut: Option[Span],slots: List[Span]) =
+      except2.foldLeft(whole_day,List[Span]()) {
         case ((todo_opt: Option[Span], cut_spans: List[Span]), not_at_time) =>
         todo_opt match {
           case Some(todo: Span) =>
@@ -38,7 +40,10 @@ object Availability {
         }
       }
 
-    Availability(slots.toSet)
+    uncut match {
+      case Some(slot) => Availability((slot :: slots).toSet)
+      case None => Availability(slots.toSet)
+    }
   }
 
   /**
