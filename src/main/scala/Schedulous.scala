@@ -41,5 +41,8 @@ object Schedulous extends App {
   val schedule = Schedule.solve(people, events)
 
   // get schedule
-  println(schedule)
+  schedule match {
+    case Some(s) => println(s)
+    case None => "Cannot find schedule that meets constraints."
+  }
 }
