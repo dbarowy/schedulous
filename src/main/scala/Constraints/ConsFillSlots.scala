@@ -26,12 +26,12 @@ case class ConsFillSlots(peoplemap: People#PeopleMap, slotmap: Timeslots#SlotMap
   }
 
   private def literalsWithAssignment(slotSymbol: SSymbol, ds: Dateslot, assignment: Assignment) : Seq[Term] = {
-    assignment.a match {
+    assignment.approval match {
       case Unapproved => literalsNoAssignment(slotSymbol, ds)
       case Approved => Seq()
       case Rejected =>
         peoplemap.flatMap { case (i,person) =>
-          if (person.availableFor(ds) && person != assignment.p) {
+          if (person.availableFor(ds) && person != assignment.person) {
             Some(
               Equals(
                 QualifiedIdentifier(SimpleIdentifier(slotSymbol)),
@@ -63,7 +63,7 @@ case class ConsFillSlots(peoplemap: People#PeopleMap, slotmap: Timeslots#SlotMap
           literalsNoAssignment(slot, ds)
       }
 
-      val expr = Or(literals)
+      val expr = if (literals.nonEmpty) { Or(literals) } else { Equals(NumeralLit(1), NumeralLit(1)) /* nop */ }
       Assert(expr)
     }.toList
 

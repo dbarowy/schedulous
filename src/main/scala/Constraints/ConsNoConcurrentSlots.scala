@@ -1,7 +1,7 @@
 package Constraints
 
 import Core.Dateslot
-import smtlib.parser.Commands.{FunDef, DefineFun, Assert, Command}
+import smtlib.parser.Commands._
 import smtlib.parser.Terms._
 import smtlib.theories.Core._
 import smtlib.theories.Ints._
@@ -29,20 +29,26 @@ case class ConsNoConcurrentSlots(peoplemap: People#PeopleMap, slotmap: Timeslots
     val arg_person = SortedVar(SSymbol("person"), IntSort())
 
     // person should not be assigned to both t1 and t2
-    val expr = And(overlaps.map { case (t1,t2) =>
-      Not(
-        And(
-          Equals(
-            QualifiedIdentifier(SimpleIdentifier(slotmap_inv(t1))),
-            QualifiedIdentifier(SimpleIdentifier(arg_person.name))
-          ),
-          Equals(
-            QualifiedIdentifier(SimpleIdentifier(slotmap_inv(t2))),
-            QualifiedIdentifier(SimpleIdentifier(arg_person.name))
+    val expr: Term =
+      if (overlaps.nonEmpty) {
+        And(overlaps.map { case (t1,t2) =>
+          Not(
+            And(
+              Equals(
+                QualifiedIdentifier(SimpleIdentifier(slotmap_inv(t1))),
+                QualifiedIdentifier(SimpleIdentifier(arg_person.name))
+              ),
+              Equals(
+                QualifiedIdentifier(SimpleIdentifier(slotmap_inv(t2))),
+                QualifiedIdentifier(SimpleIdentifier(arg_person.name))
+              )
+            )
           )
-        )
-      )
-    })
+        })
+      } else {
+        // nop
+        Equals(NumeralLit(1), NumeralLit(1))
+      }
 
     val assertions = peoplemap.map { case (person,_) =>
       Assert(

@@ -57,9 +57,9 @@ object Schedule {
       }
     }
 
-    val rejects: List[Assignment] = oldSchedule match {
+    val fixed: List[Assignment] = oldSchedule match {
       case Some(schedule) => schedule.assignments.flatMap { assn =>
-        if (assn.a == Rejected) {
+        if (assn.approval == Rejected || assn.approval == Approved) {
           Some(assn)
         } else {
           None
@@ -68,30 +68,49 @@ object Schedule {
       case None => List.empty
     }
 
-    Schedule((assignments ::: rejects).sortWith { case (a1, a2) => a1.ds.start.isBefore(a2.ds.start)})
+    Schedule((assignments ::: fixed).sortWith { case (a1, a2) => a1.slot.start.isBefore(a2.slot.start)})
   }
 }
 
 case class Schedule(assignments: Seq[Assignment]) {
 
-  val dsLookup = assignments.map { a => a.ds -> a }.toMap
+  val dsLookup = assignments.map { a => a.slot -> a }.toMap
   val pLookup : Map[Person,List[Assignment]] =
-    assignments.foldLeft(assignments.map { a => a.p -> List[Assignment]() }.toMap){
+    assignments.foldLeft(assignments.map { a => a.person -> List[Assignment]() }.toMap){
       case (m,a) =>
-        m + (a.p -> (a :: m(a.p)))
+        m + (a.person -> (a :: m(a.person)))
     }
 
   override def toString: String = {
     println("start,end,eventname,person,approval")
     assignments
-      .sortWith { case (a1,a2) => a1.ds.start.isBefore(a2.ds.start) }
+      .sortWith { case (a1,a2) => a1.slot.start.isBefore(a2.slot.start) }
       .map { a =>
-        "\"" + a.ds.start + "\",\"" + a.ds.end + "\",\"" + a.ds.eventname + "\",\"" + a.p.fname + " " + a.p.lname + "\",\"" + a.a + "\""
+        "\"" + a.slot.start + "\",\"" + a.slot.end + "\",\"" + a.slot.eventname + "\",\"" + a.person.fname + " " + a.person.lname + "\",\"" + a.approval + "\""
       }.mkString("\n")
   }
 
-  def update(assignments: Seq[Assignment]) : Schedule = {
-    ???
+  def people : Set[Person] = assignments.map { assn => assn.person }.toSet
+  def days : Set[Day] = {
+    assignments.map { assn => assn.slot }.groupBy{ ds => ds.start.toLocalDate }.map { case (date,dslots) =>
+        Day(date, dslots.map { ds => Timeslot(ds.eventname, ds.start.toLocalTime, ds.end.toLocalTime) }.toSet)
+    }.toSet
+  }
+
+  def update(changes: Seq[Assignment]) : Option[Schedule] = {
+    assert(changes.size <= assignments.size)
+
+    // update assignments with set of changes
+    val cMap = changes.map { a => a.id -> a }.toMap
+    val assignments2 = assignments.map { a =>
+      if (cMap.contains(a.id)) {
+        cMap(a.id)
+      } else {
+        a
+      }
+    }
+
+    Schedule.find(people, days, Some(Schedule(assignments2)))
   }
 
   def getAssignmentFor(slot: Dateslot) : Option[Assignment] = {
@@ -106,8 +125,8 @@ case class Schedule(assignments: Seq[Assignment]) {
     if (pLookup.contains(p)) {
       pLookup(p).foldLeft(0.0) {
         case (acc, a) =>
-          if (a.a == approval) {
-            acc + a.ds.duration.toMinutes
+          if (a.approval == approval) {
+            acc + a.slot.duration.toMinutes
           } else {
             acc
           }
