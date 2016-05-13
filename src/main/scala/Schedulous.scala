@@ -38,7 +38,7 @@ object Schedulous extends App {
   // days
   val events = Set(SundayEvents, MondayEvents)
 
-  val schedule = Schedule.solve(people, events)
+  val schedule = Schedule.find(people, events)
 
   // get schedule
   schedule match {
