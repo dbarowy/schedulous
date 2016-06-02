@@ -6,14 +6,24 @@ import smtlib.parser.Commands.{Assert, DeclareConst, Command}
 import smtlib.parser.Terms.SSymbol
 import smtlib.theories.Ints.IntSort
 
-case class Timeslots(days: Set[Day]) extends Constraint {
+object Timeslots {
+  def apply(days: Set[Day]) = new Timeslots(days)
+  def apply(days: Set[Day], slotmap: Map[SSymbol,Dateslot]) = new Timeslots(days, slotmap)
+}
+
+class Timeslots(days: Set[Day], slotmap: Map[SSymbol,Dateslot]) extends Constraint {
   type SlotMap = Map[SSymbol,Dateslot]
 
-  private val slotmap = days.flatMap { day =>
-    day.dateslots.map { slot =>
-      SMT.freshName(slot.eventname) -> slot
-    }
-  }.toMap
+  def this(days: Set[Day]) = {
+    this(
+      days,
+      days.flatMap { day =>
+        day.dateslots.map { slot =>
+          SMT.freshName(slot.eventname) -> slot
+        }
+      }.toMap
+    )
+  }
 
   val defns =
     slotmap

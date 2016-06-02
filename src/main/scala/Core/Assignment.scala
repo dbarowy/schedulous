@@ -1,5 +1,7 @@
 package Core
 
+import smtlib.parser.Terms.SSymbol
+
 object Assignment {
   var counter = 0
   def nextID() = {
@@ -7,14 +9,14 @@ object Assignment {
     counter += 1
     c
   }
-  def apply(slot: Dateslot, person: Person, approval: Approval) : Assignment = {
+  def apply(slotname: SSymbol, slot: Dateslot, person: Person, approval: Approval) : Assignment = {
     val id = Assignment.nextID()
-    Assignment(id, slot, person, approval)
+    Assignment(id, slotname, slot, person, approval)
   }
 }
 
-case class Assignment(id: Int, slot: Dateslot, person: Person, approval: Approval) {
-  def approve() : Assignment = Assignment(id, slot, person, Approved)
-  def reject() : Assignment = Assignment(id, slot, person, Rejected)
+case class Assignment(id: Int, slotname: SSymbol, slot: Dateslot, person: Person, approval: Approval) {
+  def approve() : Assignment = Assignment(id, slotname, slot, person, Approved)
+  def reject() : Assignment = Assignment(id, slotname, slot, person, Rejected)
   def undecided() : Assignment = this
 }

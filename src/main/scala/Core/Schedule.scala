@@ -1,8 +1,8 @@
 package Core
 
 import Constraints._
-import smtlib.parser.Commands.DefineFun
-import smtlib.parser.Terms.{SSymbol, SExpr, SNumeral}
+import smtlib.parser.Commands.{DefineFun, FunDef}
+import smtlib.parser.Terms.{SExpr, SNumeral, SSymbol}
 
 object Schedule {
   def find(people: Set[Person], events: Set[Day], oldSchedule: Option[Schedule] = None) : Option[Schedule] = {
@@ -13,7 +13,10 @@ object Schedule {
     val MINUTEEPS = 90
 
     // constraints
-    val schedule = Timeslots(events)
+    val schedule = oldSchedule match {
+      case None => Timeslots(events)
+      case Some(s) => Timeslots(events, s.assignments.map { a => a.slotname -> a.slot }.toMap)
+    }
     val participants = People(people)
     val c1 = ConsFillSlots(participants.peopleMap, schedule.slotMap, oldSchedule)
     val c2 = ConsMaxSlots(MAXSLOTS, participants.peopleMap, schedule.slotMap)
@@ -37,7 +40,7 @@ object Schedule {
 
     val assignments: List[Assignment] = model.flatMap { expr =>
       expr match {
-        case DefineFun(fd) =>
+        case DefineFun(fd: FunDef) =>
           val slotname = fd.name
 
           if (slotmap.contains(slotname)) {
@@ -47,7 +50,7 @@ object Schedule {
                 val slot = slotmap(slotname)
                 val person = peoplemap(personint)
 
-                Some(Assignment(slot,person,Unapproved))
+                Some(Assignment(slotname, slot,person,Unapproved))
               case _ => None
             }
           } else {
