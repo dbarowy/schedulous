@@ -8,9 +8,9 @@ import smtlib.theories.Ints._
 
 // Constraint #7: Do not assign a worker to concurrent timeslots
 case class ConsNoConcurrentSlots(peoplemap: People#PeopleMap, slotmap: Timeslots#SlotMap) extends Constraint {
-  private val (fname,fdef,assertions) = init()
+  private val constraints: Option[(DefineFun, List[Assert])] = init()
 
-  private def init() : (SSymbol,DefineFun,List[Assert]) = {
+  private def init() : Option[(DefineFun,List[Assert])] = {
     val slotmap_inv = Util.invertMap(slotmap)
     val just_slots = slotmap.values.toSeq
 
@@ -28,9 +28,9 @@ case class ConsNoConcurrentSlots(peoplemap: People#PeopleMap, slotmap: Timeslots
     val fname = SSymbol(this.getClass.getName)
     val arg_person = SortedVar(SSymbol("person"), IntSort())
 
-    // person should not be assigned to both t1 and t2
-    val expr: Term =
-      if (overlaps.nonEmpty) {
+    if (overlaps.nonEmpty) {
+      // person should not be assigned to both t1 and t2
+      val expr: Term =
         And(overlaps.map { case (t1,t2) =>
           Not(
             And(
@@ -45,28 +45,32 @@ case class ConsNoConcurrentSlots(peoplemap: People#PeopleMap, slotmap: Timeslots
             )
           )
         })
-      } else {
-        // nop
-        Equals(NumeralLit(1), NumeralLit(1))
-      }
 
-    val assertions = peoplemap.map { case (person,_) =>
-      Assert(
-        FunctionApplication(QualifiedIdentifier(SimpleIdentifier(fname)),
-          Seq(
-            NumeralLit(person)
+      val assertions = peoplemap.map { case (person,_) =>
+        Assert(
+          FunctionApplication(QualifiedIdentifier(SimpleIdentifier(fname)),
+            Seq(
+              NumeralLit(person)
+            )
           )
         )
-      )
-    }.toList
+      }.toList
 
-    (
-      fname,
-      DefineFun(FunDef(fname, Seq(arg_person), BoolSort(), expr)),
-      assertions
-    )
+      Some(
+        DefineFun(FunDef(fname, Seq(arg_person), BoolSort(), expr)),
+        assertions
+      )
+    } else {
+      None
+    }
   }
 
-  def asserts: List[Assert] = assertions
-  def definition: List[Command] = List(fdef)
+  def asserts: List[Assert] = constraints match {
+    case Some((_,assertions)) => assertions
+    case None => List()
+  }
+  def definition: List[Command] = constraints match {
+    case Some((fdef,_)) => List(fdef)
+    case None => List()
+  }
 }

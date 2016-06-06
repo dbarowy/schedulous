@@ -46,7 +46,7 @@ class ReschedulingTests extends FlatSpec with Matchers {
 
         s.update(changes) match {
           case Some(s2) => {
-            println("Schedule #2:\n\n" + s)
+            println("Schedule #2:\n\n" + s2)
 
             val s2Map = s2.assignments.map { a => a.id -> a }.toMap
             s2Map(approved.id).person == approved.person should be (true)

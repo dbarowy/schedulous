@@ -77,9 +77,9 @@ object Schedule {
 
 case class Schedule(assignments: Seq[Assignment]) {
 
-  val dsLookup = assignments.map { a => a.slot -> a }.toMap
-  val pLookup : Map[Person,List[Assignment]] =
-    assignments.foldLeft(assignments.map { a => a.person -> List[Assignment]() }.toMap){
+  private val dsLookup: Map[Dateslot, Assignment] = assignments.map { a => a.slot -> a }.toMap
+  private val pLookup : Map[Person, List[Assignment]] =
+    assignments.foldLeft(assignments.map { a => a.person -> List[Assignment]() }.toMap) {
       case (m,a) =>
         m + (a.person -> (a :: m(a.person)))
     }
@@ -101,10 +101,12 @@ case class Schedule(assignments: Seq[Assignment]) {
   }
 
   def update(changes: Seq[Assignment]) : Option[Schedule] = {
-    assert(changes.size <= assignments.size)
+    assert(changes.nonEmpty)
 
     // update assignments with set of changes
-    val cMap = changes.map { a => a.id -> a }.toMap
+    val cMap = changes
+      .filter(_.approval != Unapproved)
+      .map { a => a.id -> a }.toMap
     val assignments2 = assignments.map { a =>
       if (cMap.contains(a.id)) {
         cMap(a.id)

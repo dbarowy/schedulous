@@ -8,7 +8,7 @@ import smtlib.theories.Ints.NumeralLit
 
 // Constraint #1: This slot must be filled
 case class ConsFillSlots(peoplemap: People#PeopleMap, slotmap: Timeslots#SlotMap, oldSchedule: Option[Schedule]) extends Constraint {
-  private val (fname,fdef,assertions) = init()
+  private val assertions = init()
 
   private def literalsNoAssignment(slotSymbol: SSymbol, ds: Dateslot) : Seq[Term] = {
     peoplemap.flatMap { case (i,person) =>
@@ -45,10 +45,8 @@ case class ConsFillSlots(peoplemap: People#PeopleMap, slotmap: Timeslots#SlotMap
     }
   }
 
-  private def init() : (SSymbol,DefineFun,List[Assert]) = {
+  private def init() : List[Assert] = {
     val fname = SSymbol(this.getClass.getName)
-    // nop function definition
-    val fdef = DefineFun(FunDef(fname, Seq(), BoolSort(), Equals(NumeralLit(1), NumeralLit(1))))
     val assertions =
     slotmap.map { case (slot: SSymbol, ds: Dateslot) =>
       val literals: Seq[Term] = oldSchedule match {
@@ -67,9 +65,9 @@ case class ConsFillSlots(peoplemap: People#PeopleMap, slotmap: Timeslots#SlotMap
       Assert(expr)
     }.toList
 
-    (fname,fdef,assertions)
+    assertions
   }
 
-  def definition : List[Command] = List(fdef)
+  def definition : List[Command] = List()
   def asserts: List[Assert] = assertions
 }
