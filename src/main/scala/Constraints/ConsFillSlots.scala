@@ -48,22 +48,25 @@ case class ConsFillSlots(peoplemap: People#PeopleMap, slotmap: Timeslots#SlotMap
   private def init() : List[Assert] = {
     val fname = SSymbol(this.getClass.getName)
     val assertions =
-    slotmap.map { case (slot: SSymbol, ds: Dateslot) =>
-      val literals: Seq[Term] = oldSchedule match {
-        case Some(schedule) =>
-          // old schedule, consider assignment approvals
-          schedule.getAssignmentFor(ds) match {
-            case Some(assn) => literalsWithAssignment(slot, ds, assn)
-            case None => literalsNoAssignment(slot, ds)
-          }
-        case None =>
-          // no old schedule, just use availability
-          literalsNoAssignment(slot, ds)
-      }
+      slotmap.flatMap { case (slot: SSymbol, ds: Dateslot) =>
+        val literals: Seq[Term] = oldSchedule match {
+          case Some(schedule) =>
+            // old schedule, consider assignment approvals
+            schedule.getAssignmentFor(ds) match {
+              case Some(assn) => literalsWithAssignment(slot, ds, assn)
+              case None => literalsNoAssignment(slot, ds)
+            }
+          case None =>
+            // no old schedule, just use availability
+            literalsNoAssignment(slot, ds)
+        }
 
-      val expr = if (literals.nonEmpty) { Or(literals) } else { Equals(NumeralLit(1), NumeralLit(1)) /* nop */ }
-      Assert(expr)
-    }.toList
+        if (literals.nonEmpty) {
+          Some(Assert(Or(literals)))
+        } else {
+          None
+        }
+      }.toList
 
     assertions
   }
