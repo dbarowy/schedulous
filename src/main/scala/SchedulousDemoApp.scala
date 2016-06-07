@@ -27,7 +27,15 @@ object SchedulousDemoApp extends App {
     val c6 = ConsAvgWorkload(MINUTEEPS, c5.name, peopleMap, slotMap)
     val c7 = ConsNoConcurrentSlots(peopleMap, slotMap)
 
-    List(c1, c2, c3, c4, c5, c6, c7)
+    List(
+      c1,
+//      c2,
+      c3,
+//      c4,
+//      c5,
+//      c6,
+      c7
+    )
   }
 
   // find schedule
