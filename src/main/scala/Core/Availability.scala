@@ -82,6 +82,6 @@ object Availability {
   }
 }
 
-case class Availability(schedule: Set[(LocalDateTime,LocalDateTime)]) {
+case class Availability(schedule: Set[Availability.Span]) {
   def +(a2: Availability) : Availability = Availability(this.schedule.union(a2.schedule))
 }

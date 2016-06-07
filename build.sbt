@@ -12,4 +12,6 @@ libraryDependencies += "edu.umass.cs" %% "smtlib" % "1.0.1"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.6" % "test"
 
+libraryDependencies += "com.github.tototoshi" %% "scala-csv" % "1.3.1"
+
 
