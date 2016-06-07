@@ -42,9 +42,7 @@ class ReschedulingTests extends FlatSpec with Matchers {
         // choose an assignment to reject
         val rejected = s.assignments(1).reject()
 
-        val changes = approved :: rejected :: s.assignments.slice(2,s.assignments.length).toList
-
-        s.update(changes) match {
+        s.update(List(approved, rejected)) match {
           case Some(s2) => {
             println("Schedule #2:\n\n" + s2)
 
