@@ -34,13 +34,19 @@ case class VolunteerCSVReader(filename: String) {
   def peopleWhoCanServe(tentativeMeansAvailable: Boolean) : Set[Person] = {
     raw.flatMap { row =>
       if (row("Can Serve (confirmed)") == "Y") {
-        Some(
-          Person(
-            row("First name"),
-            row("Last name"),
-            availability(row, tentativeMeansAvailable)
+        val avail = availability(row, tentativeMeansAvailable)
+
+        if (avail == Availability.NotAvailable) {
+          None
+        } else {
+          Some(
+            Person(
+              row("First name"),
+              row("Last name"),
+              avail
+            )
           )
-        )
+        }
       } else {
         None
       }
