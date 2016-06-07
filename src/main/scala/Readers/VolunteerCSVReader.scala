@@ -23,7 +23,7 @@ case class VolunteerCSVReader(filename: String) {
     // compute availability
     days.foldLeft(Availability.NotAvailable){ case (acc,(key,avail)) =>
         if (row(key) == "Y"
-            || (if (tentativeMeansAvailable) { row(key) == "T" } else { true })) {
+            || (if (tentativeMeansAvailable) { row(key) == "T" } else { false })) {
           acc + avail
         } else {
           acc

@@ -18,14 +18,19 @@ case class ConsMaxDays(maxdays: Int, days: Set[Day], peoplemap: People#PeopleMap
     val slotmap_inv = Util.invertMap(slotmap)
 
     val terms = days.map { day =>
-      val subexpr = day.dateslots.map { slot =>
+      val subexprs = day.dateslots.map { slot =>
         val symb = slotmap_inv(slot)
         Equals(
           QualifiedIdentifier(SimpleIdentifier(symb)),
           QualifiedIdentifier(SimpleIdentifier(arg_person.name))
         )
       }.toSeq
-      ITE(Or(subexpr), NumeralLit(1), NumeralLit(0))
+
+      if (subexprs.size > 1) {
+        ITE(Or(subexprs), NumeralLit(1), NumeralLit(0))
+      } else {
+        ITE(subexprs.head, NumeralLit(1), NumeralLit(0))
+      }
     }
 
     val exprReducer = (lhs: Term, rhs: Term) => smtlib.theories.Ints.Add(lhs,rhs)
