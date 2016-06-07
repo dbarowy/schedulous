@@ -8,6 +8,7 @@ import smtlib.theories.Ints.NumeralLit
 
 // Constraint #1: This slot must be filled
 case class ConsFillSlots(peoplemap: People#PeopleMap, slotmap: Timeslots#SlotMap, oldSchedule: Option[Schedule]) extends Constraint {
+  private val invPeopleMap = Util.invertMap(peoplemap)
   private val assertions = init()
 
   private def literalsNoAssignment(slotSymbol: SSymbol, ds: Dateslot) : Seq[Term] = {
@@ -28,7 +29,13 @@ case class ConsFillSlots(peoplemap: People#PeopleMap, slotmap: Timeslots#SlotMap
   private def literalsWithAssignment(slotSymbol: SSymbol, ds: Dateslot, assignment: Assignment) : Seq[Term] = {
     assignment.approval match {
       case Unapproved => literalsNoAssignment(slotSymbol, ds)
-      case Approved => Seq()
+      case Approved =>
+        Seq(
+          Equals(
+            QualifiedIdentifier(SimpleIdentifier(slotSymbol)),
+            NumeralLit(invPeopleMap(assignment.person))
+          )
+        )
       case Rejected =>
         peoplemap.flatMap { case (i,person) =>
           if (person.availableFor(ds) && person != assignment.person) {
@@ -46,7 +53,6 @@ case class ConsFillSlots(peoplemap: People#PeopleMap, slotmap: Timeslots#SlotMap
   }
 
   private def init() : List[Assert] = {
-    val fname = SSymbol(this.getClass.getName)
     val assertions =
       slotmap.flatMap { case (slot: SSymbol, ds: Dateslot) =>
         val literals: Seq[Term] = oldSchedule match {
@@ -61,9 +67,14 @@ case class ConsFillSlots(peoplemap: People#PeopleMap, slotmap: Timeslots#SlotMap
             literalsNoAssignment(slot, ds)
         }
 
-        if (literals.nonEmpty) {
+        if (literals.size >= 2) {
+          // Or requires at least 2 arguments
           Some(Assert(Or(literals)))
+        } else if (literals.nonEmpty) {
+          // one argument
+          Some(Assert(literals.head))
         } else {
+          // no constraints
           None
         }
       }.toList
