@@ -13,6 +13,9 @@ case class ConsAvgWorkload(minute_epsilon: Int, workloadfn: SSymbol, peoplemap: 
   val (fname,fdef,assertions) = init()
 
   private def init() : (SSymbol,DefineFun,List[Assert]) = {
+    val num_people = peoplemap.size
+    assert(num_people > 0, "You cannot schedule zero people.")
+
     val fname = SSymbol(this.getClass.getName)
     val arg_epsilon = SortedVar(SSymbol("epsilon"), RealSort())
     val literals = peoplemap.map { case (person,_) =>
@@ -22,7 +25,6 @@ case class ConsAvgWorkload(minute_epsilon: Int, workloadfn: SSymbol, peoplemap: 
       )
     }.toSeq
 
-    val num_people = peoplemap.size
     val exprReducer = (lhs: Term, rhs: Term) => smtlib.theories.Ints.Add(lhs,rhs)
     val total_workload = literals.reduce(exprReducer)
     val avg_workload = Div(total_workload, NumeralLit(num_people))
