@@ -5,12 +5,11 @@ import smtlib.parser.Commands.{DefineFun, FunDef}
 import smtlib.parser.Terms.{SExpr, SNumeral, SSymbol}
 
 object Schedule {
-  def find(people: Set[Person], events: Set[Day], oldSchedule: Option[Schedule] = None) : Option[Schedule] = {
-    // constants
-    val MAXSLOTS  = 2
-    val MINSLOTS  = 1
-    val MAXDAYS   = 1
-    val MINUTEEPS = 90
+  def find(setup: (People#PeopleMap, Timeslots#SlotMap, Option[Schedule]) => List[Constraint],
+           people: Set[Person],
+           events: Set[Day],
+           oldSchedule: Option[Schedule] = None
+          ) : Option[Schedule] = {
 
     // constraints
     val schedule = oldSchedule match {
@@ -18,17 +17,12 @@ object Schedule {
       case Some(s) => Timeslots(events, s.assignments.map { a => a.slotname -> a.slot }.toMap)
     }
     val participants = People(people)
-    val c1 = ConsFillSlots(participants.peopleMap, schedule.slotMap, oldSchedule)
-    val c2 = ConsMaxSlots(MAXSLOTS, participants.peopleMap, schedule.slotMap)
-    val c3 = ConsMinSlots(MINSLOTS, participants.peopleMap, schedule.slotMap)
-    val c4 = ConsMaxDays(MAXDAYS, events, participants.peopleMap, schedule.slotMap)
-    val c5 = ConsWorkload(participants.peopleMap, schedule.slotMap, oldSchedule)
-    val c6 = ConsAvgWorkload(MINUTEEPS, c5.name, participants.peopleMap, schedule.slotMap)
-    val c7 = ConsNoConcurrentSlots(participants.peopleMap, schedule.slotMap)
+    val constraints = setup(participants.peopleMap, schedule.slotMap, oldSchedule)
 
-    // solver
-    val solver = Solver(Seq(schedule,participants,c1,c2,c3,c4,c5,c6,c7), debug = true)
+    // run solver
+    val solver = Solver(schedule :: participants :: constraints, debug = true)
 
+    // parse output
     solver.model match {
       case Some(mod) => Some(parseModel(mod, schedule.slotMap, participants.peopleMap, oldSchedule))
       case None => None
@@ -118,7 +112,8 @@ case class Schedule(assignments: Seq[Assignment]) {
     }.toSet
   }
 
-  def update(changes: Seq[Assignment]) : Option[Schedule] = {
+  def update(setup: (People#PeopleMap, Timeslots#SlotMap, Option[Schedule]) => List[Constraint],
+             changes: Seq[Assignment]) : Option[Schedule] = {
     assert(changes.nonEmpty)
 
     // update assignments with set of changes
@@ -133,7 +128,7 @@ case class Schedule(assignments: Seq[Assignment]) {
       }
     }
 
-    Schedule.find(people, days, Some(Schedule(assignments2)))
+    Schedule.find(setup, people, days, Some(Schedule(assignments2)))
   }
 
   def getAssignmentFor(slot: Dateslot) : Option[Assignment] = {

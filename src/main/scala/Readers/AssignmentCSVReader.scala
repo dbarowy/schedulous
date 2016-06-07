@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter
 import Core.{Day, Timeslot}
 import com.github.tototoshi.csv.CSVReader
 
-class AssignmentCSVReader(filename: String) {
+case class AssignmentCSVReader(filename: String) {
   private val reader = CSVReader.open(new File(filename))
   private val raw: List[Map[String, String]] = reader.allWithHeaders()
 
@@ -28,7 +28,7 @@ class AssignmentCSVReader(filename: String) {
     Day(date, slots)
   }
 
-  def slots : Set[Day] = {
+  def days : Set[Day] = {
     val rowsByDay: Map[String, List[Map[String, String]]] = raw.groupBy(row => row("date"))
 
     rowsByDay.map { case (datestring, rows) => dayFromRows(datestring, rows) }.toSet

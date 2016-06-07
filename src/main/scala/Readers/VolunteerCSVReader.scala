@@ -6,7 +6,7 @@ import java.time.Month
 import Core.{Availability, Person}
 import com.github.tototoshi.csv.CSVReader
 
-class ConfirmedCSVReader(filename: String) {
+case class VolunteerCSVReader(filename: String) {
   private val reader = CSVReader.open(new File(filename))
   private val raw: List[Map[String, String]] = reader.allWithHeaders()
 
@@ -31,13 +31,19 @@ class ConfirmedCSVReader(filename: String) {
     }
   }
 
-  def peopleWhoCanServe(tentativeMeansAvailable: Boolean) : List[Person] = {
+  def peopleWhoCanServe(tentativeMeansAvailable: Boolean) : Set[Person] = {
     raw.flatMap { row =>
       if (row("Can Serve (confirmed)") == "Y") {
-        Some(Person(row("First name"), row("Last name"), availability(row, tentativeMeansAvailable)))
+        Some(
+          Person(
+            row("First name"),
+            row("Last name"),
+            availability(row, tentativeMeansAvailable)
+          )
+        )
       } else {
         None
       }
-    }
+    }.toSet
   }
 }

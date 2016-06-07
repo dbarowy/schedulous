@@ -1,5 +1,6 @@
 import java.time.{LocalDate, LocalTime, Month}
 
+import Constraints.{ConsAvgWorkload, ConsMaxDays, ConsNoConcurrentSlots, ConsWorkload, _}
 import Core._
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -18,6 +19,9 @@ class ReschedulingTests extends FlatSpec with Matchers {
       )
     )
 
+    // days
+    val events = Set(SundayEvents)
+
     // people
     val people = Set(
       Person("Person", "One", Availability.AllDay(Sunday)),
@@ -26,10 +30,26 @@ class ReschedulingTests extends FlatSpec with Matchers {
       Person("Person", "Four", Availability.AllDay(Sunday))
     )
 
-    // days
-    val events = Set(SundayEvents)
+    // constraint config
+    val MAXSLOTS  = 2
+    val MINSLOTS  = 1
+    val MAXDAYS   = 1
+    val MINUTEEPS = 90
 
-    val schedule = Schedule.find(people, events)
+    // constraint loader
+    val conf = (peopleMap: People#PeopleMap, slotMap: Timeslots#SlotMap, oldSchedule: Option[Schedule]) => {
+      val c1 = ConsFillSlots(peopleMap, slotMap, oldSchedule)
+      val c2 = ConsMaxSlots(MAXSLOTS, peopleMap, slotMap)
+      val c3 = ConsMinSlots(MINSLOTS, peopleMap, slotMap)
+      val c4 = ConsMaxDays(MAXDAYS, events, peopleMap, slotMap)
+      val c5 = ConsWorkload(peopleMap, slotMap, oldSchedule)
+      val c6 = ConsAvgWorkload(MINUTEEPS, c5.name, peopleMap, slotMap)
+      val c7 = ConsNoConcurrentSlots(peopleMap, slotMap)
+
+      List(c1, c2, c3, c4, c5, c6, c7)
+    }
+
+    val schedule = Schedule.find(conf, people, events)
 
     // get schedule
     schedule match {
@@ -42,7 +62,7 @@ class ReschedulingTests extends FlatSpec with Matchers {
         // choose an assignment to reject
         val rejected = s.assignments(1).reject()
 
-        s.update(List(approved, rejected)) match {
+        s.update(conf, List(approved, rejected)) match {
           case Some(s2) => {
             println("Schedule #2:\n\n" + s2)
 
