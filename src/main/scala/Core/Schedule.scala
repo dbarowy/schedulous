@@ -44,15 +44,33 @@ object Schedule {
           val slotname = fd.name
 
           if (slotmap.contains(slotname)) {
-            fd.body match {
+            val slot: Dateslot = slotmap(slotname)
+
+            // create potential assignment if needed
+            lazy val potentialAssn: Option[Assignment] = fd.body match {
               case SNumeral(i) =>
                 val personint = i.toInt
-                val slot = slotmap(slotname)
                 val person = peoplemap(personint)
 
                 Some(Assignment(slotname, slot,person,Proposed))
               case _ => None
             }
+
+            // emit previously-approved assignment if it exists
+            oldSchedule match {
+              case Some(sched) =>
+                sched.getAssignmentFor(slot) match {
+                  case Some(assn) =>
+                    if (assn.approval == Approved) {
+                      Some(assn)
+                    } else {
+                      potentialAssn
+                    }
+                  case None => potentialAssn
+                }
+              case None => potentialAssn
+            }
+
           } else {
             None
           }
@@ -60,9 +78,9 @@ object Schedule {
       }
     }
 
-    val fixed: List[Assignment] = oldSchedule match {
+    val rejects: List[Assignment] = oldSchedule match {
       case Some(schedule) => schedule.assignments.flatMap { assn =>
-        if (assn.approval == Rejected || assn.approval == Approved) {
+        if (assn.approval == Rejected) {
           Some(assn)
         } else {
           None
@@ -71,7 +89,7 @@ object Schedule {
       case None => List.empty
     }
 
-    Schedule((assignments ::: fixed).sortWith { case (a1, a2) => a1.slot.start.isBefore(a2.slot.start)})
+    Schedule((assignments ::: rejects).sortWith { case (a1, a2) => a1.slot.start.isBefore(a2.slot.start)})
   }
 }
 
