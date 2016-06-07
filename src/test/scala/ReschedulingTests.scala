@@ -48,14 +48,41 @@ class ReschedulingTests extends FlatSpec with Matchers {
           case Some(s2) => {
             println("Schedule #2:\n\n" + s2)
 
-            val s2Map = s2.assignments.map { a => a.id -> a }.toMap
-            s2Map(approved.id).person == approved.person should be (true)
-            s2Map(approved.id).approval == approved.approval should be (true)
-            s2Map(rejected.id).person != rejected.person should be (true)
-            s2Map(rejected.id).approval != rejected.approval should be (true)
+            val accAndProp = s2.assignments.foldLeft(Map[String,List[Assignment]]()) {
+              case (acc, a) =>
+                if (acc.contains(a.slotname.name)) {
+                  acc + (a.slotname.name -> (a :: acc(a.slotname.name)))
+                } else {
+                  acc + (a.slotname.name -> List(a))
+                }
+            }
+
+            // the final schedule should contain the approved slot with the same person
+            accAndProp(approved.slotname.name)
+              .exists(a =>
+                a.person == approved.person &&
+                  a.approval == Approved
+              ) should be (true)
+
+            // the final schedule should contain the rejected slot with the same person
+            accAndProp(rejected.slotname.name)
+              .exists(a =>
+                a.person == rejected.person &&
+                  a.approval == Rejected
+              ) should be (true)
+
+            // the final schedule should contain the rejected slot with an alternate proposed assignment
+            accAndProp(rejected.slotname.name)
+              .exists(a =>
+                a.person != rejected.person &&
+                  a.approval == Proposed
+              ) should be (true)
+
+            // everything that wasn't explicitly accepted or rejected in the
+            // last step must be proposed
             s2.assignments
               .filter { a => a.id != approved.id && a.id != rejected.id }
-              .forall { a => a.approval == Unapproved } should be (true)
+              .forall { a => a.approval == Proposed } should be (true)
           }
           case None => fail()
         }

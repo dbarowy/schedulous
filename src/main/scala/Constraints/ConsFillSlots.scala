@@ -28,7 +28,7 @@ case class ConsFillSlots(peoplemap: People#PeopleMap, slotmap: Timeslots#SlotMap
 
   private def literalsWithAssignment(slotSymbol: SSymbol, ds: Dateslot, assignment: Assignment) : Seq[Term] = {
     assignment.approval match {
-      case Unapproved => literalsNoAssignment(slotSymbol, ds)
+      case Proposed => literalsNoAssignment(slotSymbol, ds)
       case Approved =>
         Seq(
           Equals(

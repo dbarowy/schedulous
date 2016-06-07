@@ -50,7 +50,7 @@ object Schedule {
                 val slot = slotmap(slotname)
                 val person = peoplemap(personint)
 
-                Some(Assignment(slotname, slot,person,Unapproved))
+                Some(Assignment(slotname, slot,person,Proposed))
               case _ => None
             }
           } else {
@@ -105,7 +105,7 @@ case class Schedule(assignments: Seq[Assignment]) {
 
     // update assignments with set of changes
     val cMap = changes
-      .filter(_.approval != Unapproved)
+      .filter(_.approval != Proposed)
       .map { a => a.id -> a }.toMap
     val assignments2 = assignments.map { a =>
       if (cMap.contains(a.id)) {
