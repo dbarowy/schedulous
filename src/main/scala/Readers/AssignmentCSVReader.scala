@@ -11,7 +11,7 @@ case class AssignmentCSVReader(filename: String) {
   private val raw: List[Map[String, String]] = reader.allWithHeaders()
 
   private def dayFromRows(datestring: String, rows: List[Map[String,String]]) : Day = {
-    val dateFormatter = DateTimeFormatter.ofPattern("M/d/yy")
+    val dateFormatter = DateTimeFormatter.ofPattern("M/d/yyyy")
     val timeFormatter = DateTimeFormatter.ofPattern("H:m")
 
     val date = LocalDate.parse(datestring, dateFormatter)

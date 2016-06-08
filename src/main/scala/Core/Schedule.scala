@@ -8,7 +8,8 @@ object Schedule {
   def find(setup: (People#PeopleMap, Timeslots#SlotMap, Option[Schedule]) => List[Constraint],
            people: Set[Person],
            events: Set[Day],
-           oldSchedule: Option[Schedule] = None
+           oldSchedule: Option[Schedule] = None,
+           debug: Boolean = true
           ) : Option[Schedule] = {
 
     // constraints
@@ -20,17 +21,19 @@ object Schedule {
     val constraints = setup(participants.peopleMap, schedule.slotMap, oldSchedule)
 
     // run solver
-    val solver = Solver(schedule :: participants :: constraints, debug = true)
+    val solver = Solver(schedule :: participants :: constraints, debug)
 
     // parse output
     solver.model match {
-      case Some(mod) => Some(parseModel(mod, schedule.slotMap, participants.peopleMap, oldSchedule))
+      case Some(mod) => Some(parseModel(mod, schedule.slotMap, participants.peopleMap, oldSchedule, debug))
       case None => None
     }
   }
 
-  def parseModel(model: List[SExpr], slotmap: Timeslots#SlotMap, peoplemap: People#PeopleMap, oldSchedule: Option[Schedule]) : Schedule = {
-    val rx = """\(define-fun (.+) \(\) Int ([0-9]+)\)""".r
+  def parseModel(model: List[SExpr], slotmap: Timeslots#SlotMap, peoplemap: People#PeopleMap, oldSchedule: Option[Schedule], debug: Boolean = true) : Schedule = {
+    if (debug) {
+      model.foreach { sexpr => println(sexpr) }
+    }
 
     val assignments: List[Assignment] = model.flatMap { expr =>
       expr match {

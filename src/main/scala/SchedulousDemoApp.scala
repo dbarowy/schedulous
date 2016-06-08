@@ -8,10 +8,10 @@ object SchedulousDemoApp extends App {
   val evtPath = "/Users/dbarowy/OneDrive/UMass/Volunteer/PLDI 2016/assignment_data/events.csv"
 
   // constraint config
-  val MAXSLOTS  = 2
+  val MAXSLOTS  = 4
   val MINSLOTS  = 1
-  val MAXDAYS   = 1
-  val MINUTEEPS = 90
+  val MAXDAYS   = 2
+  val MINUTEEPS = 240
 
   // load data
   val people = VolunteerCSVReader(volPath).peopleWhoCanServe(false)
@@ -29,9 +29,9 @@ object SchedulousDemoApp extends App {
 
     List(
       c1,
-//      c2,
+      c2,
       c3,
-//      c4,
+      c4,
 //      c5,
 //      c6,
       c7
