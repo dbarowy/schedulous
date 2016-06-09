@@ -168,4 +168,6 @@ case class Schedule(assignments: Seq[Assignment]) {
     } else {
       0.0
     }
+
+  def merge(s: Schedule) : Schedule = ???
 }

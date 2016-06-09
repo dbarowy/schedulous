@@ -11,12 +11,12 @@ case class VolunteerCSVReader(filename: String) {
   private val raw: List[Map[String, String]] = reader.allWithHeaders()
 
   private def availability(row: Map[String,String], tentativeMeansAvailable: Boolean) : Availability = {
-    val sun = "Available Sun 6/12"    -> Availability.AllDay(2015, Month.JUNE, 12)
-    val mon = "Available Mon 6/13"    -> Availability.AllDay(2015, Month.JUNE, 13)
-    val tue = "Available Tue 6/14"    -> Availability.AllDay(2015, Month.JUNE, 14)
-    val wed = "Available Wed 6/15"    -> Availability.AllDay(2015, Month.JUNE, 15)
-    val thu = "Available Thurs 6/16"  -> Availability.AllDay(2015, Month.JUNE, 16)
-    val fri = "Available Fri 6/17"    -> Availability.AllDay(2015, Month.JUNE, 17)
+    val sun = "Available Sun 6/12"    -> Availability.AllDay(2016, Month.JUNE, 12)
+    val mon = "Available Mon 6/13"    -> Availability.AllDay(2016, Month.JUNE, 13)
+    val tue = "Available Tue 6/14"    -> Availability.AllDay(2016, Month.JUNE, 14)
+    val wed = "Available Wed 6/15"    -> Availability.AllDay(2016, Month.JUNE, 15)
+    val thu = "Available Thurs 6/16"  -> Availability.AllDay(2016, Month.JUNE, 16)
+    val fri = "Available Fri 6/17"    -> Availability.AllDay(2016, Month.JUNE, 17)
 
     val days = List(sun, mon, tue, wed, thu, fri)
 

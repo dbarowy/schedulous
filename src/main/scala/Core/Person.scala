@@ -3,7 +3,10 @@ package Core
 case class Person(fname: String, lname: String, availability: Availability) {
   def availableFor(dateslot: Dateslot) : Boolean = {
     availability.schedule.foldLeft(false){ case (avail,(start,end)) =>
-        avail || (!dateslot.start.isBefore(start) && !dateslot.end.isAfter(end))
+      val slotStartsBefore = dateslot.start.isBefore(start)
+      val slotEndsAfter = dateslot.end.isAfter(end)
+
+        avail || (!slotStartsBefore && !slotEndsAfter)
     }
   }
 

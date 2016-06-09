@@ -44,12 +44,16 @@ object SchedulousDemoApp extends App {
   // print schedule
   schedule match {
     case Some(s) =>
+
+      // add filled slots back in
+      val merged = s.merge(filledSlots)
+
       println("\nSCHEDULE:\n")
-      println(s)
+      println(merged)
       println("\nWORKLOADS:\n")
-      s.people.foreach { p =>
-        println(p + ", APPROVED: " + s.workloadFor(p, Approved))
-        println(p + ", PROPOSED: " + s.workloadFor(p, Proposed))
+      merged.people.foreach { p =>
+        println(p + ", APPROVED: " + merged.workloadFor(p, Approved))
+        println(p + ", PROPOSED: " + merged.workloadFor(p, Proposed))
       }
     case None => "Cannot find schedule that meets constraints."
   }

@@ -53,7 +53,7 @@ case class ConsFillSlots(peoplemap: People#PeopleMap, slotmap: Timeslots#SlotMap
   }
 
   private def init() : List[Assert] = {
-    val assertions =
+    val ass: List[Assert] =
       slotmap.flatMap { case (slot: SSymbol, ds: Dateslot) =>
         val literals: Seq[Term] = oldSchedule match {
           case Some(schedule) =>
@@ -79,9 +79,12 @@ case class ConsFillSlots(peoplemap: People#PeopleMap, slotmap: Timeslots#SlotMap
         }
       }.toList
 
-    assertions
+    ass
   }
 
   def definition : List[Command] = List()
-  def asserts: List[Assert] = assertions
+  def asserts: List[Assert] = {
+    assert(assertions.nonEmpty, "ERROR: There should always be at least one available person.")
+    assertions
+  }
 }
