@@ -10,7 +10,8 @@ class AvailabilityTests extends FlatSpec with Matchers {
     val a = Availability.AllDay(2016, Month.MAY, 12)
     val p = Person("Jane", "Doe", a)
 
-    val d = Dateslot("meeting",
+    val d = Dateslot("meeting0",
+                     "meeting",
                      LocalDateTime.of(date, LocalTime.of(11, 15)),
                      LocalDateTime.of(date, LocalTime.of(12, 15))
             )
@@ -24,7 +25,9 @@ class AvailabilityTests extends FlatSpec with Matchers {
     val a = Availability.NotAvailable
     val p = Person("Jane", "Doe", a)
 
-    val d = Dateslot("meeting",
+    val d = Dateslot(
+      "meeting0",
+      "meeting",
       LocalDateTime.of(date, LocalTime.of(11, 15)),
       LocalDateTime.of(date, LocalTime.of(12, 15))
     )
@@ -41,7 +44,9 @@ class AvailabilityTests extends FlatSpec with Matchers {
     val a = Availability.AllDayExcept(2016, Month.MAY, 12, except)
     val p = Person("Jane", "Doe", a)
 
-    val d = Dateslot("meeting",
+    val d = Dateslot(
+      "meeting0",
+      "meeting",
       LocalDateTime.of(date, LocalTime.of(11, 15)),
       LocalDateTime.of(date, LocalTime.of(12, 15))
     )
@@ -58,7 +63,9 @@ class AvailabilityTests extends FlatSpec with Matchers {
     val a = Availability.AllDayExcept(2016, Month.MAY, 12, except)
     val p = Person("Jane", "Doe", a)
 
-    val d = Dateslot("meeting",
+    val d = Dateslot(
+      "meeting0",
+      "meeting",
       LocalDateTime.of(date, LocalTime.of(13, 15)),
       LocalDateTime.of(date, LocalTime.of(14, 15))
     )

@@ -49,7 +49,7 @@ object Schedule {
                 val personint = i.toInt
                 val person = peoplemap(personint)
 
-                Some(Assignment(slotname, slot,person,Proposed))
+                Some(Assignment(slotname, slot, person, Proposed))
               case _ => None
             }
 
@@ -102,17 +102,22 @@ case class Schedule(assignments: Seq[Assignment]) {
   override def toString: String = {
     println("start,end,eventname,person,approval")
     assignments
-      .sortWith { case (a1,a2) => a1.slot.start.isBefore(a2.slot.start) }
-      .map { a =>
-        "\"" + a.slot.start + "\",\"" + a.slot.end + "\",\"" + a.slot.eventname + "\",\"" + a.person.fname + " " + a.person.lname + "\",\"" + a.approval + "\""
-      }.mkString("\n")
+      .sortWith { case (a1,a2) =>
+        a1.slot.start.isBefore(a2.slot.start)
+      }
+      .map(_.toString).mkString("\n")
   }
 
   def people : Set[Person] = assignments.map { assn => assn.person }.toSet
   def days : Set[Day] = {
-    assignments.map { assn => assn.slot }.groupBy{ ds => ds.start.toLocalDate }.map { case (date,dslots) =>
-        Day(date, dslots.map { ds => Timeslot(ds.eventname, ds.start.toLocalTime, ds.end.toLocalTime) }.toSet)
-    }.toSet
+    assignments
+      .map { assn => assn.slot }
+      .groupBy{ ds => ds.start.toLocalDate }
+      .map { case (date,dslots) =>
+        Day(date, dslots.map { ds =>
+          Timeslot(ds.z3name, ds.prettyname, ds.start.toLocalTime, ds.end.toLocalTime)
+        }.toSet)
+      }.toSet
   }
 
   def update(setup: (People#PeopleMap, Timeslots#SlotMap, Option[Schedule]) => List[Constraint],

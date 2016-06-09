@@ -19,7 +19,7 @@ class Timeslots(days: Set[Day], slotmap: Map[SSymbol,Dateslot]) extends Constrai
       days,
       days.flatMap { day =>
         day.dateslots.map { slot =>
-          SMT.freshName(slot.eventname) -> slot
+          SMT.freshName(slot.z3name) -> slot
         }
       }.toMap
     )

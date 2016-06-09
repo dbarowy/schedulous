@@ -12,10 +12,10 @@ class ReschedulingTests extends FlatSpec with Matchers {
     val SundayEvents = Day(
       Sunday,
       Set(
-        Timeslot("WORKSHOP1", LocalTime.of(9,0), LocalTime.of(10,0)),
-        Timeslot("WORKSHOP2", LocalTime.of(10,0), LocalTime.of(11,0)),
-        Timeslot("WORKSHOP3", LocalTime.of(12,0), LocalTime.of(13,0)),
-        Timeslot("WORKSHOP4", LocalTime.of(14,0), LocalTime.of(15,0))
+        Timeslot("WORKSHOP1", "WORKSHOP1", LocalTime.of(9,0), LocalTime.of(10,0)),
+        Timeslot("WORKSHOP2", "WORKSHOP2", LocalTime.of(10,0), LocalTime.of(11,0)),
+        Timeslot("WORKSHOP3", "WORKSHOP3", LocalTime.of(12,0), LocalTime.of(13,0)),
+        Timeslot("WORKSHOP4", "WORKSHOP4", LocalTime.of(14,0), LocalTime.of(15,0))
       )
     )
 

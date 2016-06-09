@@ -3,8 +3,8 @@ package Core
 import java.sql.Timestamp
 import java.time.{Duration, LocalDateTime, LocalTime}
 
-case class Timeslot(eventname: String, start: LocalTime, end: LocalTime) { assert(end.isAfter(start)) }
-case class Dateslot(eventname: String, start: LocalDateTime, end: LocalDateTime) {
+case class Timeslot(z3name: String, prettyname: String, start: LocalTime, end: LocalTime) { assert(end.isAfter(start)) }
+case class Dateslot(z3name: String, prettyname: String, start: LocalDateTime, end: LocalDateTime) {
   def overlaps(other: Dateslot) : Boolean = {
     dateBetween(this,other) || dateBetween(other, this)
   }
@@ -18,7 +18,7 @@ case class Dateslot(eventname: String, start: LocalDateTime, end: LocalDateTime)
   override def equals(obj: scala.Any): Boolean = {
     obj match {
       case ds: Dateslot =>
-        this.eventname == ds.eventname &&
+        this.z3name == ds.z3name &&
         this.start.isEqual(ds.start) &&
         this.end.isEqual(ds.end)
       case _ => false

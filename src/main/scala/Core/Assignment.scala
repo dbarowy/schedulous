@@ -14,4 +14,10 @@ case class Assignment(id: UUID, slotname: SSymbol, slot: Dateslot, person: Perso
   def approve() : Assignment = Assignment(id, slotname, slot, person, Approved)
   def reject() : Assignment = Assignment(id, slotname, slot, person, Rejected)
   def undecided() : Assignment = this
+  override def toString: String =
+    "\"" + slot.start +
+    "\",\"" + slot.end +
+    "\",\"" + slot.prettyname +
+    "\",\"" + person.fname + " " + person.lname +
+    "\",\"" + approval + "\""
 }

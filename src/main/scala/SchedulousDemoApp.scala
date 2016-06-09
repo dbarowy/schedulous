@@ -17,7 +17,7 @@ object SchedulousDemoApp extends App {
   val people = VolunteerCSVReader(volPath).peopleWhoCanServe(false)
   val events = AssignmentCSVReader(evtPath).days
 
-  // constraint loader
+  // constraint config
   val conf = (peopleMap: People#PeopleMap, slotMap: Timeslots#SlotMap, oldSchedule: Option[Schedule]) => {
     val c1 = ConsFillSlots(peopleMap, slotMap, oldSchedule)
     val c2 = ConsMaxSlots(MAXSLOTS, peopleMap, slotMap)
