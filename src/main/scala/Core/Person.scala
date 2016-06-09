@@ -18,4 +18,6 @@ case class Person(fname: String, lname: String, availability: Availability) {
       case _ => false
     }
   }
+
+  override def toString: String = fname + " " + lname
 }

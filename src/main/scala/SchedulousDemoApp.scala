@@ -8,7 +8,7 @@ object SchedulousDemoApp extends App {
   val evtPath = "/Users/dbarowy/OneDrive/UMass/Volunteer/PLDI 2016/assignment_data/events.csv"
 
   // constraint config
-  val MAXSLOTS  = 4
+  val MAXSLOTS  = 3
   val MINSLOTS  = 1
   val MAXDAYS   = 2
   val MINUTEEPS = 240
@@ -32,8 +32,8 @@ object SchedulousDemoApp extends App {
       c2,
       c3,
       c4,
-//      c5,
-//      c6,
+      c5,
+      c6,
       c7
     )
   }
@@ -43,7 +43,14 @@ object SchedulousDemoApp extends App {
 
   // print schedule
   schedule match {
-    case Some(s) => println(s)
+    case Some(s) =>
+      println("\nSCHEDULE:\n")
+      println(s)
+      println("\nWORKLOADS:\n")
+      s.people.foreach { p =>
+        println(p + ", APPROVED: " + s.workloadFor(p, Approved))
+        println(p + ", PROPOSED: " + s.workloadFor(p, Proposed))
+      }
     case None => "Cannot find schedule that meets constraints."
   }
 }
