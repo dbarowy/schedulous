@@ -49,7 +49,14 @@ object SchedulousDemoApp extends App {
       val merged = s.merge(filledSlots)
 
       // sanity check
-      assert(merged.assignments.forall { a => a.person.availableFor(a.slot) })
+      assert(merged.assignments.forall { a =>
+        val actuallyAvailable = a.person.availableFor(a.slot)
+        if (!actuallyAvailable) {
+          filledSlots.assignments.contains(a)
+        } else {
+          true
+        }
+      })
 
       println("\nSCHEDULE:\n")
       println(merged)
