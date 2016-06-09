@@ -169,5 +169,9 @@ case class Schedule(assignments: Seq[Assignment]) {
       0.0
     }
 
-  def merge(s: Schedule) : Schedule = ???
+  def merge(s: Schedule) : Schedule = {
+    val allAssn = (s.assignments.toList ::: this.assignments.toList)
+      .sortWith { case (a1, a2) => a1.slot.start.isBefore(a2.slot.start)}
+    Schedule(allAssn)
+  }
 }
