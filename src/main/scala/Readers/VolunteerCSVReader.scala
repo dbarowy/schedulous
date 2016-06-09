@@ -31,25 +31,23 @@ case class VolunteerCSVReader(filename: String) {
     }
   }
 
-  def peopleWhoCanServe(tentativeMeansAvailable: Boolean) : Set[Person] = {
-    raw.flatMap { row =>
+  def people(tentativeMeansAvailable: Boolean) : (Set[Person],Set[Person]) = {
+    val allPeople = raw.flatMap { row =>
       if (row("Can Serve (confirmed)") == "Y") {
         val avail = availability(row, tentativeMeansAvailable)
 
-        if (avail == Availability.NotAvailable) {
-          None
-        } else {
-          Some(
-            Person(
-              row("First name"),
-              row("Last name"),
-              avail
-            )
+        Some(
+          Person(
+            row("First name"),
+            row("Last name"),
+            avail
           )
-        }
+        )
       } else {
         None
       }
     }.toSet
+
+    allPeople.partition { person => person.availability != Availability.NotAvailable }
   }
 }

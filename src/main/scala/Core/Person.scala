@@ -7,6 +7,8 @@ case class Person(fname: String, lname: String, availability: Availability) {
     }
   }
 
+  def canonicalName: String = (fname + lname).replaceAll("[^a-zA-Z]", "")
+
   override def hashCode(): Int = {
     ((this.fname.hashCode.toLong + this.lname.hashCode.toLong) % Int.MaxValue).toInt
   }

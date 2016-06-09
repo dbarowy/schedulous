@@ -14,15 +14,15 @@ object SchedulousDemoApp extends App {
   val MINUTEEPS = 90
 
   // load data
-  val people = VolunteerCSVReader(volPath).peopleWhoCanServe(false)
-  val events = AssignmentCSVReader(evtPath).days
+  val (availablePeople: Set[Person],reservedPeople: Set[Person]) = VolunteerCSVReader(volPath).people(false)
+  val (unfilledSlots,filledSlots) = AssignmentCSVReader(evtPath).assignments(availablePeople.union(reservedPeople))
 
   // constraint config
   val conf = (peopleMap: People#PeopleMap, slotMap: Timeslots#SlotMap, oldSchedule: Option[Schedule]) => {
     val c1 = ConsFillSlots(peopleMap, slotMap, oldSchedule)
     val c2 = ConsMaxSlots(MAXSLOTS, peopleMap, slotMap)
     val c3 = ConsMinSlots(MINSLOTS, peopleMap, slotMap)
-    val c4 = ConsMaxDays(MAXDAYS, events, peopleMap, slotMap)
+    val c4 = ConsMaxDays(MAXDAYS, unfilledSlots.days, peopleMap, slotMap)
     val c5 = ConsWorkload(peopleMap, slotMap)
     val c6 = ConsFairWorkload(MINUTEEPS, c5.name, peopleMap, slotMap)
     val c7 = ConsNoConcurrentSlots(peopleMap, slotMap)
@@ -39,7 +39,7 @@ object SchedulousDemoApp extends App {
   }
 
   // find schedule
-  val schedule = Schedule.find(conf, people, events)
+  val schedule = Schedule.find(conf, availablePeople, unfilledSlots.days)
 
   // print schedule
   schedule match {

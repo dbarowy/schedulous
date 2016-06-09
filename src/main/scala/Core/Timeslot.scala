@@ -1,9 +1,21 @@
 package Core
 
 import java.sql.Timestamp
-import java.time.{Duration, LocalDateTime, LocalTime}
+import java.time.{Duration, LocalDate, LocalDateTime, LocalTime}
 
-case class Timeslot(z3name: String, prettyname: String, role: String, start: LocalTime, end: LocalTime) { assert(end.isAfter(start)) }
+case class Timeslot(z3name: String, prettyname: String, role: String, start: LocalTime, end: LocalTime) {
+  assert(end.isAfter(start))
+
+  def toDateslot(date: LocalDate) = {
+    Dateslot(
+      this.z3name,
+      this.prettyname,
+      this.role,
+      LocalDateTime.of(date, this.start),
+      LocalDateTime.of(date, this.end)
+    )
+  }
+}
 case class Dateslot(z3name: String, prettyname: String, role: String, start: LocalDateTime, end: LocalDateTime) {
   def overlaps(other: Dateslot) : Boolean = {
     dateBetween(this,other) || dateBetween(other, this)
