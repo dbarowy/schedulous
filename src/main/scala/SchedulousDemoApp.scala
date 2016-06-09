@@ -29,8 +29,8 @@ object SchedulousDemoApp extends App {
 
     List(
       c1,
-      c2,
-      c3,
+//      c2,
+//      c3,
       c4,
       c5,
       c6,
