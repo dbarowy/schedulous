@@ -11,9 +11,9 @@ import smtlib.theories.Reals.{DecimalLit, RealSort}
 
 // Constraint #5: Helper function to compute a person's workload in minutes.
 case class ConsWorkload(peoplemap: People#PeopleMap, slotmap: Timeslots#SlotMap) extends Constraint {
-  val (fname,fdef,assertions) = init()
+  val (fname,fdef) = init()
 
-  private def init() : (SSymbol,DefineFun,List[Assert]) = {
+  private def init() : (SSymbol,DefineFun) = {
     val fname = SSymbol(this.getClass.getName)
     val arg_person = SortedVar(SSymbol("person"), IntSort())
 
@@ -33,13 +33,10 @@ case class ConsWorkload(peoplemap: People#PeopleMap, slotmap: Timeslots#SlotMap)
     val expr = literals.reduce(exprReducer)
     val fdef = DefineFun(FunDef(fname, Seq(arg_person), RealSort(), expr))
 
-    (fname, fdef, List.empty)
+    (fname, fdef)
   }
 
-  def asserts: List[Assert] = {
-    assert(assertions.nonEmpty, "ERROR: There should always be at least one workload.")
-    assertions
-  }
+  def asserts: List[Assert] = List.empty
   def definition: List[Command] = List(fdef)
   def name: SSymbol = fname
 }
