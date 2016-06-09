@@ -47,7 +47,15 @@ object Schedule {
             lazy val potentialAssn: Option[Assignment] = fd.body match {
               case SNumeral(i) =>
                 val personint = i.toInt
-                val person = peoplemap(personint)
+                val person = try {
+                  peoplemap(personint)
+                } catch {
+                  case e: Exception =>
+                    val e1 = e
+                    val pi = personint
+                    val foo = peoplemap
+                    throw e1
+                }
 
                 Some(Assignment(slotname, slot, person, Proposed))
               case _ => None

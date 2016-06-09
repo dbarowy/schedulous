@@ -11,7 +11,7 @@ object SchedulousDemoApp extends App {
   val MAXSLOTS  = 3
   val MINSLOTS  = 1
   val MAXDAYS   = 2
-  val MINUTEEPS = 240
+  val MINUTEEPS = 90
 
   // load data
   val people = VolunteerCSVReader(volPath).peopleWhoCanServe(false)
