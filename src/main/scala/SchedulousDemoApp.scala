@@ -48,7 +48,8 @@ object SchedulousDemoApp extends App {
       // add filled slots back in
       val merged = s.merge(filledSlots)
 
-      // sanity check
+      // sanity checks
+      // 1. every assignment is assigned to an actually-available person
       assert(merged.assignments.forall { a =>
         val actuallyAvailable = a.person.availableFor(a.slot)
         if (!actuallyAvailable) {
@@ -56,6 +57,11 @@ object SchedulousDemoApp extends App {
         } else {
           true
         }
+      })
+
+      // 2. every person has an assignment
+      assert(merged.people.forall { p =>
+        merged.assignments.exists { a => a.person == p }
       })
 
       println("\nSCHEDULE:\n")
