@@ -48,6 +48,9 @@ object SchedulousDemoApp extends App {
       // add filled slots back in
       val merged = s.merge(filledSlots)
 
+      // sanity check
+      assert(merged.assignments.forall { a => a.person.availableFor(a.slot) })
+
       println("\nSCHEDULE:\n")
       println(merged)
       println("\nWORKLOADS:\n")
