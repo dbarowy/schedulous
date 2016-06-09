@@ -7,6 +7,7 @@ case class Day(date: LocalDate, slots: Set[Timeslot]) {
     Dateslot(
       slot.z3name,
       slot.prettyname,
+      slot.role,
       LocalDateTime.of(date, slot.start),
       LocalDateTime.of(date, slot.end)
     )

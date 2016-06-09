@@ -19,24 +19,31 @@ case class AssignmentCSVReader(filename: String) {
 
     val date = LocalDate.parse(datestring, dateFormatter)
 
-    val slots = rows.map { case row =>
-      // get canonical name
-      val event = munge(row("event"))
-
-      // add an index to make unique key
-      if (keys.contains(event)) {
-        keys += event -> (keys(event) + 1)
+    val slots = rows.flatMap { case row =>
+      if (row("assign") == "N") {
+        None
       } else {
-        keys += event -> 0
-      }
+        // get canonical name
+        val event = munge(row("event"))
 
-      // output slot with unique name (the key)
-      Timeslot(
-        event + "_" + keys(event),
-        row("event"),
-        LocalTime.parse(row("start"), timeFormatter),
-        LocalTime.parse(row("end"), timeFormatter)
-      )
+        // add an index to make unique key
+        if (keys.contains(event)) {
+          keys += event -> (keys(event) + 1)
+        } else {
+          keys += event -> 0
+        }
+
+        // output slot with unique name (the key)
+        Some(
+          Timeslot(
+            event + "_" + keys(event),
+            row("event"),
+            row("role"),
+            LocalTime.parse(row("start"), timeFormatter),
+            LocalTime.parse(row("end"), timeFormatter)
+          )
+        )
+      }
     }.toSet
 
     Day(date, slots)

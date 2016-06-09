@@ -12,6 +12,7 @@ class AvailabilityTests extends FlatSpec with Matchers {
 
     val d = Dateslot("meeting0",
                      "meeting",
+                     "lover",
                      LocalDateTime.of(date, LocalTime.of(11, 15)),
                      LocalDateTime.of(date, LocalTime.of(12, 15))
             )
@@ -28,6 +29,7 @@ class AvailabilityTests extends FlatSpec with Matchers {
     val d = Dateslot(
       "meeting0",
       "meeting",
+      "hater",
       LocalDateTime.of(date, LocalTime.of(11, 15)),
       LocalDateTime.of(date, LocalTime.of(12, 15))
     )
@@ -47,6 +49,7 @@ class AvailabilityTests extends FlatSpec with Matchers {
     val d = Dateslot(
       "meeting0",
       "meeting",
+      "lover",
       LocalDateTime.of(date, LocalTime.of(11, 15)),
       LocalDateTime.of(date, LocalTime.of(12, 15))
     )
@@ -66,6 +69,7 @@ class AvailabilityTests extends FlatSpec with Matchers {
     val d = Dateslot(
       "meeting0",
       "meeting",
+      "hater",
       LocalDateTime.of(date, LocalTime.of(13, 15)),
       LocalDateTime.of(date, LocalTime.of(14, 15))
     )

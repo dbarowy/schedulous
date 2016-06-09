@@ -108,7 +108,7 @@ case class Schedule(assignments: Seq[Assignment]) {
     }
 
   override def toString: String = {
-    println("start,end,eventname,person,approval")
+    Assignment.header + "\n" +
     assignments
       .sortWith { case (a1,a2) =>
         a1.slot.start.isBefore(a2.slot.start)
@@ -123,7 +123,7 @@ case class Schedule(assignments: Seq[Assignment]) {
       .groupBy{ ds => ds.start.toLocalDate }
       .map { case (date,dslots) =>
         Day(date, dslots.map { ds =>
-          Timeslot(ds.z3name, ds.prettyname, ds.start.toLocalTime, ds.end.toLocalTime)
+          Timeslot(ds.z3name, ds.prettyname, ds.role, ds.start.toLocalTime, ds.end.toLocalTime)
         }.toSet)
       }.toSet
   }
