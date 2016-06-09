@@ -47,6 +47,9 @@ case class ConsMinSlots(minslots: Int, peoplemap: People#PeopleMap, slotmap: Tim
     )
   }
 
-  override def asserts: List[Assert] = assertions
+  override def asserts: List[Assert] = {
+    assert(assertions.nonEmpty, "ERROR: There should always be at least one person.")
+    assertions
+  }
   override def definition: List[Command] = List(fdef)
 }

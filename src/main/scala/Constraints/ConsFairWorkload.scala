@@ -72,6 +72,9 @@ case class ConsFairWorkload(minute_epsilon: Int, workloadfn: SSymbol, peoplemap:
     (fname, fdef, assertions)
   }
 
-  def asserts: List[Assert] = assertions
+  def asserts: List[Assert] = {
+    assert(assertions.nonEmpty, "ERROR: There should always be at least one workload.")
+    assertions
+  }
   def definition: List[Command] = List(fdef)
 }

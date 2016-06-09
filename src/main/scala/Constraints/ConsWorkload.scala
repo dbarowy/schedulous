@@ -36,7 +36,10 @@ case class ConsWorkload(peoplemap: People#PeopleMap, slotmap: Timeslots#SlotMap)
     (fname, fdef, List.empty)
   }
 
-  def asserts: List[Assert] = assertions
+  def asserts: List[Assert] = {
+    assert(assertions.nonEmpty, "ERROR: There should always be at least one workload.")
+    assertions
+  }
   def definition: List[Command] = List(fdef)
   def name: SSymbol = fname
 }

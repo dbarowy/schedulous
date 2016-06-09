@@ -57,6 +57,9 @@ case class ConsMaxDays(maxdays: Int, days: Set[Day], peoplemap: People#PeopleMap
     )
   }
 
-  def asserts: List[Assert] = assertions
+  def asserts: List[Assert] = {
+    assert(assertions.nonEmpty, "ERROR: There should always be at least one person.")
+    assertions
+  }
   def definition: List[Command] = List(fdef)
 }
