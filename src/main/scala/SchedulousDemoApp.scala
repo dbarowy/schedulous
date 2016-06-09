@@ -1,4 +1,4 @@
-import Constraints.{ConsAvgWorkload, ConsNoConcurrentSlots, _}
+import Constraints.{ConsFairWorkload, ConsNoConcurrentSlots, _}
 import Core._
 import Readers._
 
@@ -23,8 +23,8 @@ object SchedulousDemoApp extends App {
     val c2 = ConsMaxSlots(MAXSLOTS, peopleMap, slotMap)
     val c3 = ConsMinSlots(MINSLOTS, peopleMap, slotMap)
     val c4 = ConsMaxDays(MAXDAYS, events, peopleMap, slotMap)
-    val c5 = ConsWorkload(peopleMap, slotMap, oldSchedule)
-    val c6 = ConsAvgWorkload(MINUTEEPS, c5.name, peopleMap, slotMap)
+    val c5 = ConsWorkload(peopleMap, slotMap)
+    val c6 = ConsFairWorkload(MINUTEEPS, c5.name, peopleMap, slotMap)
     val c7 = ConsNoConcurrentSlots(peopleMap, slotMap)
 
     List(

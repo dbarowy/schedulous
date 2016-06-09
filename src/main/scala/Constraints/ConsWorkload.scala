@@ -10,8 +10,7 @@ import smtlib.theories.Ints.Add
 import smtlib.theories.Reals.{DecimalLit, RealSort}
 
 // Constraint #5: Helper function to compute a person's workload in minutes.
-//                Takes old schedule into account.
-case class ConsWorkload(peoplemap: People#PeopleMap, slotmap: Timeslots#SlotMap, oldSchedule: Option[Schedule]) extends Constraint {
+case class ConsWorkload(peoplemap: People#PeopleMap, slotmap: Timeslots#SlotMap) extends Constraint {
   val (fname,fdef,assertions) = init()
 
   private def init() : (SSymbol,DefineFun,List[Assert]) = {
@@ -20,34 +19,14 @@ case class ConsWorkload(peoplemap: People#PeopleMap, slotmap: Timeslots#SlotMap,
 
     val exprReducer = (lhs: Term, rhs: Term) => smtlib.theories.Ints.Add(lhs,rhs)
 
-    val base_workload = oldSchedule match {
-      case Some(schedule) =>
-        val work =
-          peoplemap.map { case (psymb,person) =>
-            ITE(
-              Equals(
-                DecimalLit(psymb),
-                QualifiedIdentifier(SimpleIdentifier(arg_person.name))
-              ),
-              DecimalLit(schedule.workloadFor(person, Approved)),
-              DecimalLit(0)
-            )
-          }
-        work.reduce(exprReducer)
-      case None => DecimalLit(0)
-    }
-
     val literals = slotmap.map { case (symb,slot) =>
-      Add(
-        base_workload,
-        ITE(
-          Equals(
-            QualifiedIdentifier(SimpleIdentifier(symb)),
-            QualifiedIdentifier(SimpleIdentifier(arg_person.name))
-          ),
-          DecimalLit(Duration.between(slot.start,slot.end).toMinutes.toDouble),
-          DecimalLit(0)
-        )
+      ITE(
+        Equals(
+          QualifiedIdentifier(SimpleIdentifier(symb)),
+          QualifiedIdentifier(SimpleIdentifier(arg_person.name))
+        ),
+        DecimalLit(Duration.between(slot.start,slot.end).toMinutes.toDouble),
+        DecimalLit(0)
       )
     }.toSeq
 

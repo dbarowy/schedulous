@@ -1,6 +1,6 @@
 import java.time.{LocalDate, LocalTime, Month}
 
-import Constraints.{ConsAvgWorkload, ConsMaxDays, ConsNoConcurrentSlots, ConsWorkload, _}
+import Constraints.{ConsFairWorkload, ConsMaxDays, ConsNoConcurrentSlots, ConsWorkload, _}
 import Core._
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -42,11 +42,19 @@ class ReschedulingTests extends FlatSpec with Matchers {
       val c2 = ConsMaxSlots(MAXSLOTS, peopleMap, slotMap)
       val c3 = ConsMinSlots(MINSLOTS, peopleMap, slotMap)
       val c4 = ConsMaxDays(MAXDAYS, events, peopleMap, slotMap)
-      val c5 = ConsWorkload(peopleMap, slotMap, oldSchedule)
-      val c6 = ConsAvgWorkload(MINUTEEPS, c5.name, peopleMap, slotMap)
+      val c5 = ConsWorkload(peopleMap, slotMap)
+      val c6 = ConsFairWorkload(MINUTEEPS, c5.name, peopleMap, slotMap)
       val c7 = ConsNoConcurrentSlots(peopleMap, slotMap)
 
-      List(c1, c2, c3, c4, c5, c6, c7)
+      List(
+        c1,
+        c2,
+        c3,
+        c4,
+        c5,
+        c6,
+        c7
+      )
     }
 
     val schedule = Schedule.find(conf, people, events)
@@ -102,7 +110,9 @@ class ReschedulingTests extends FlatSpec with Matchers {
               .filter { a => a.id != approved.id && a.id != rejected.id }
               .forall { a => a.approval == Proposed } should be (true)
           }
-          case None => fail()
+          case None =>
+
+            fail()
         }
       case None => fail()
     }
