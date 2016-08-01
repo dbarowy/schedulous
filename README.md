@@ -18,8 +18,8 @@ You will need the following software installed:
 After you have installed the above prerequisites, you will need to create two CSVs.
 
 1. You will need a `events.csv` file containing all of the timeslots you need filled, one per line.  It must have the at least the following header fields in any order: `date,start,end,duration,event,role,approval,person`.  Extra header fields will be ignored.
-2. You will need a `workers.csv' file containing all of the workers and their availability, one worker per line.  It must have at least the following header fields in any order: `First Name,Last Name` as well as a set of fields indicating availability, e.g., `Available Tue 6/14`.
-3. For now, you will need to create/modify the `VolunteerCSVReader` to indicate how to interpret the ``Available [date]` fields.  See [here](https://github.com/dbarowy/schedulous/blob/master/src/main/scala/Readers/VolunteerCSVReader.scala).
+2. You will need a `workers.csv` file containing all of the workers and their availability, one worker per line.  It must have at least the following header fields in any order: `First Name,Last Name` as well as a set of fields indicating availability, e.g., `Available Tue 6/14`.
+3. For now, you will need to create/modify the `VolunteerCSVReader` to indicate how to interpret the `Available [date]` fields.  See [here](https://github.com/dbarowy/schedulous/blob/master/src/main/scala/Readers/VolunteerCSVReader.scala).
 4. Create a Scala program that reads in your event and worker data files, sets Schedulous configuration options, and then produces a schedule.  Feel free to modify the example [here](https://github.com/dbarowy/schedulous/blob/master/src/main/scala/SchedulousDemoApp.scala).
 5. Run your program.
 
